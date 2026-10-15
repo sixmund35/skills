@@ -3,54 +3,68 @@
 Snapshots of my installed skills, including scripts, references, and assets.
 Git preserves the installed versions and local customizations across machines.
 
-## Set up a new machine
+## Install on a new machine
 
-Requires Git and Bash (Linux, macOS, or WSL):
+Install Node.js/npm and Git, then use the
+[skills CLI](https://github.com/vercel-labs/skills) directly from this repository.
+No manual clone or custom installer is needed.
 
-```bash
-git clone https://github.com/sixmund35/skills.git "$HOME/repositories/skills"
-cd "$HOME/repositories/skills"
-bash install.sh --dry-run
-bash install.sh
-```
-
-The installer links each top-level skill folder into `~/.agents/skills`.
-Codex supports personal skills and symlinked skill folders in that location:
-https://learn.chatgpt.com/docs/build-skills
-
-Nested skills and supporting files remain inside their original parent folder.
-Keep the clone in place because the installed symlinks point into it. Codex
-normally detects new skills automatically; restart it if they do not appear.
-
-Existing files, folders, and symlinks (including broken ones) are skipped.
-Rerunning the installer is safe. To replace an existing installation, move that
-specific skill folder somewhere safe, then rerun the installer. No existing
-installation is replaced automatically.
-
-For another agent or a temporary installation, choose a destination:
+Install all five top-level skills globally for Codex:
 
 ```bash
-bash install.sh --dest /path/to/agent/skills
+npx skills add sixmund35/skills -g -a codex --skill '*' -y
 ```
+
+- `-g`: install globally for your user, across projects.
+- `-a codex`: target Codex (`~/.agents/skills`).
+- `--skill '*'`: select all available skills; quotes prevent shell expansion.
+- `-y`: skip confirmation prompts.
+
+List available skills without installing:
+
+```bash
+npx skills add sixmund35/skills --list
+```
+
+Install a specific skill:
+
+```bash
+npx skills add sixmund35/skills -g -a codex --skill draw-io -y
+```
+
+Install for multiple agents:
+
+```bash
+npx skills add sixmund35/skills -g -a codex claude-code --skill '*' -y
+```
+
+For a project-only installation, run the command in that project and omit `-g`.
+The Foundry skill includes its nested skills and supporting files in its folder.
 
 ## Update and customize
 
-Edit the files under `skills/`, review the changes, then commit and push them.
-On another machine:
+Check installed skills and update global installations with the skills CLI:
 
 ```bash
-cd "$HOME/repositories/skills"
-git pull --ff-only
-bash install.sh
+npx skills list -g
+npx skills update -g
 ```
 
-Existing links see file changes immediately. Rerunning the installer adds new
-skill folders. Remove an old symlink manually if its skill was removed from the
-repository. If you move the clone, move its old symlinks aside and rerun the
-installer to create links to the new location.
+The update command checks all globally installed skills. To update just these
+five, name them explicitly:
 
-These are copies, not Git submodules. The installer does not download upstream
-updates; review and copy upstream changes manually to preserve customizations.
+```bash
+npx skills update -g c4-architecture draw-io find-skills mermaid-diagrams microsoft-foundry
+```
+
+To add newly published skills, rerun the install-all command above.
+
+To customize the source, clone this repository, edit files under `skills/`, then
+review, commit, and push your changes. Other devices can retrieve those changes
+with `npx skills update -g`.
+
+These skills are copies, not Git submodules. Updates come from this repository;
+review and copy changes from the original repositories manually when desired.
 
 ## Included sources
 
@@ -62,13 +76,9 @@ updates; review and copy upstream changes manually to preserve customizations.
 | `find-skills` | [vercel-labs/skills](https://github.com/vercel-labs/skills) | `skills/find-skills` |
 | `microsoft-foundry` | [microsoft/azure-skills](https://github.com/microsoft/azure-skills) | `.github/plugins/azure-skills/skills/microsoft-foundry` |
 
-`sources.json` records provenance from the local installer metadata. Its original
-folder hashes are installer hashes, not upstream Git commit SHAs. Exact upstream
-revisions were unavailable; the backed-up files preserve the installed versions.
-`snapshot-sha256.json` contains the initial per-file checksums. Regenerate it
-after intentionally updating the snapshot if you want a current integrity record.
-`.gitattributes` preserves original line endings in the skill snapshots so clones
-retain the same file checksums across platforms.
+The table preserves original source attribution. Git records the backed-up
+versions and subsequent customizations. `.gitattributes` preserves original
+line endings in the skill files across platforms.
 
 The installed copies contained no standalone upstream license files. Existing
 license declarations and notices inside files are preserved. Consult the original
@@ -76,11 +86,11 @@ repositories for applicable terms and retain their required notices when sharing
 
 ## Tools and connections
 
-The installer only links files. Install tools required by the workflows separately:
+The skills CLI installs skill files. Install tools required by the workflows
+separately:
 
 - draw.io CLI (`drawio`) for local draw.io exports.
 - Mermaid CLI (`mmdc`) for local Mermaid image exports, if needed.
-- Node.js/npm for workflows that invoke `npx skills`.
 - Azure CLI, PowerShell, SDKs, and MCP connections as required by Foundry tasks.
 
 Some imported instructions contain machine-specific or agent-specific paths;
