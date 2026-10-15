@@ -67,6 +67,8 @@ folder hashes are installer hashes, not upstream Git commit SHAs. Exact upstream
 revisions were unavailable; the backed-up files preserve the installed versions.
 `snapshot-sha256.json` contains the initial per-file checksums. Regenerate it
 after intentionally updating the snapshot if you want a current integrity record.
+`.gitattributes` preserves original line endings in the skill snapshots so clones
+retain the same file checksums across platforms.
 
 The installed copies contained no standalone upstream license files. Existing
 license declarations and notices inside files are preserved. Consult the original
